@@ -11,6 +11,12 @@ class ZendFramework < Formula
   def install
     prefix.install Dir['*']
     rm "#{bin}/zf.bat"
+    mv "#{bin}/zf.sh", "#{bin}/zf"
+    chmod 0644, "#{bin}/zf"
+    inreplace "#{bin}/zf" do |s|
+      s.gsub! /^\s*SELF_LINK_TMP=.*while.*done\s*$/m, ''
+    end
+    chmod 0444, "#{bin}/zf"
   end
 
   def caveats; <<-EOS
