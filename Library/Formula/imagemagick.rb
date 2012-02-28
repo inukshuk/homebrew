@@ -22,11 +22,11 @@ def disable_openmp?
 end
 
 def enable_hdri?
-    ARGV.include? '--enable-hdri'
+  ARGV.include? '--enable-hdri'
 end
 
 def magick_plus_plus?
-    ARGV.include? '--with-magick-plus-plus'
+  ARGV.include? '--with-magick-plus-plus'
 end
 
 def use_exr?
@@ -34,26 +34,27 @@ def use_exr?
 end
 
 def quantum_depth_8?
-    ARGV.include? '--with-quantum-depth-8'
+  ARGV.include? '--with-quantum-depth-8'
 end
 
 def quantum_depth_16?
-    ARGV.include? '--with-quantum-depth-16'
+  ARGV.include? '--with-quantum-depth-16'
 end
 
 def quantum_depth_32?
-    ARGV.include? '--with-quantum-depth-32'
+  ARGV.include? '--with-quantum-depth-32'
 end
 
 
 class Imagemagick < Formula
-  # Using an unofficial Git mirror to work around:
-  # * Stable tarballs disappearing
-  # * Bad https cert on official SVN repo
-  url 'https://github.com/trevor/ImageMagick/tarball/6.7.1-1'
-  md5 '9c71dfbddc42b78a0d8db8acdb534d37'
   homepage 'http://www.imagemagick.org'
-  head 'https://github.com/trevor/ImageMagick.git'
+
+  # upstream's stable tarballs tend to disappear, so we provide our own mirror
+  url 'http://downloads.sf.net/project/machomebrew/mirror/ImageMagick-6.7.5-7.tar.bz2'
+  sha256 'fe88eb9f3ce832b0027b58a04c26871886a0721779b5c0044213018c6a6ba49f'
+
+  head 'https://www.imagemagick.org/subversion/ImageMagick/trunk',
+    :using => UnsafeSubversionDownloadStrategy
 
   bottle do
     url 'http://downloads.sf.net/project/machomebrew/Bottles/imagemagick-6.7.1-1-bottle.tar.gz'
@@ -94,7 +95,6 @@ class Imagemagick < Formula
 
   def install
     ENV.x11 # Add to PATH for freetype-config on Snow Leopard
-    ENV.O3 # takes forever otherwise
 
     args = [ "--disable-osx-universal-binary",
              "--without-perl", # I couldn't make this compile
