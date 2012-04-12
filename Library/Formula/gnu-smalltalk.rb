@@ -22,7 +22,15 @@ class GnuSmalltalk < Formula
   depends_on 'libffi' if ARGV.build_head?
   depends_on 'libsigsegv' if ARGV.build_head?
 
-  fails_with_llvm "Codegen problems with LLVM", :build => 2334
+  if ARGV.build_head? and MacOS.xcode_version >= "4.3"
+    depends_on "automake" => :build
+    depends_on "libtool" => :build
+  end
+
+  fails_with :llvm do
+    build 2334
+    cause "Codegen problems with LLVM"
+  end
 
   def patches
     # Builds GNU Smalltalk clean in 64-bit mode with SDL and Cairo support
