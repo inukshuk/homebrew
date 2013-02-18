@@ -1,13 +1,9 @@
 require 'formula'
 
 class NeedsSnowLeopard < Requirement
-  def satisfied?
-    MacOS.version >= :snow_leopard
-  end
+  fatal true
 
-  def fatal?
-    true
-  end
+  satisfy MacOS.version >= :snow_leopard
 
   def message; <<-EOS.undent
     The version of Freetype that comes with Leopard is too old to build MuPDF
@@ -24,7 +20,7 @@ class Mupdf < Formula
   url 'http://mupdf.googlecode.com/files/mupdf-1.1-source.tar.gz'
   sha1 'e2c2cd555d790ed97bd6507accf29817945dfe81'
 
-  depends_on NeedsSnowLeopard.new
+  depends_on NeedsSnowLeopard
 
   depends_on 'jpeg'
   depends_on 'openjpeg'
@@ -40,7 +36,7 @@ class Mupdf < Formula
     openjpeg = Formula.factory 'openjpeg'
     ENV.append 'CPPFLAGS', "-I#{Dir[openjpeg.include/'openjpeg-*'].first}"
     ENV.append 'CFLAGS', '-DNDEBUG'
-    ENV['SYS_FREETYPE_INC'] = MacOS.x11_prefix/'include'/'freetype2'
+    ENV['SYS_FREETYPE_INC'] = "-I#{MacOS::X11.include}/freetype2"
 
     system "make", "install", "prefix=#{prefix}"
   end
