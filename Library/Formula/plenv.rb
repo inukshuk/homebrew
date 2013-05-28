@@ -2,8 +2,8 @@ require 'formula'
 
 class Plenv < Formula
   homepage 'https://github.com/tokuhirom/plenv'
-  url 'https://github.com/tokuhirom/plenv/tarball/1.4.3'
-  sha1 '1911aef906343bfc66ecd92274de454e55fc0e9c'
+  url 'https://github.com/tokuhirom/plenv/archive/1.4.15.tar.gz'
+  sha1 '34c8524b990010c6d1d1d8508b880904b327fe03'
 
   head 'https://github.com/tokuhirom/plenv.git'
 

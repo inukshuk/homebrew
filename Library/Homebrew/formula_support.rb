@@ -1,15 +1,18 @@
 require 'download_strategy'
-require 'checksums'
+require 'checksum'
 require 'version'
 
 class SoftwareSpec
   attr_reader :checksum, :mirrors, :specs
+  attr_reader :using # for auditing
 
   def initialize url=nil, version=nil
     @url = url
     @version = version
     @mirrors = []
     @specs = {}
+    @checksum = nil
+    @using = nil
   end
 
   def download_strategy
@@ -33,12 +36,8 @@ class SoftwareSpec
   # The methods that follow are used in the block-form DSL spec methods
   Checksum::TYPES.each do |cksum|
     class_eval <<-EOS, __FILE__, __LINE__ + 1
-      def #{cksum}(val=nil)
-        if val.nil?
-          @checksum if @checksum.nil? or @checksum.hash_type == :#{cksum}
-        else
-          @checksum = Checksum.new(:#{cksum}, val)
-        end
+      def #{cksum}(val)
+        @checksum = Checksum.new(:#{cksum}, val)
       end
     EOS
   end
@@ -62,7 +61,6 @@ class SoftwareSpec
   end
 
   def mirror val
-    @mirrors ||= []
     @mirrors << val
   end
 end
@@ -79,26 +77,21 @@ end
 
 class Bottle < SoftwareSpec
   attr_writer :url
-  # TODO: Can be removed when all bottles migrated to underscored cat symbols.
-  attr_reader :cat_without_underscores
 
   def initialize
     super
     @revision = 0
     @prefix = '/usr/local'
     @cellar = '/usr/local/Cellar'
-    @cat_without_underscores = false
   end
 
   # Checksum methods in the DSL's bottle block optionally take
   # a Hash, which indicates the platform the checksum applies on.
   Checksum::TYPES.each do |cksum|
     class_eval <<-EOS, __FILE__, __LINE__ + 1
-      def #{cksum}(val=nil)
+      def #{cksum}(val)
         @#{cksum} ||= Hash.new
         case val
-        when nil
-          @#{cksum}[MacOS.cat]
         when Hash
           key, value = val.shift
           @#{cksum}[value] = Checksum.new(:#{cksum}, key)
@@ -106,9 +99,6 @@ class Bottle < SoftwareSpec
 
         if @#{cksum}.has_key? MacOS.cat
           @checksum = @#{cksum}[MacOS.cat]
-        elsif @#{cksum}.has_key? MacOS.cat_without_underscores
-          @checksum = @#{cksum}[MacOS.cat_without_underscores]
-          @cat_without_underscores = true
         end
       end
     EOS

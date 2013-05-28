@@ -14,9 +14,7 @@ class Spidermonkey < Formula
   version '1.8.5'
   sha1 '52a01449c48d7a117b35f213d3e4263578d846d6'
 
-  # This is terribly, terribly slow the first time.
-  # head 'https://hg.mozilla.org/tracemonkey', :using => :hg
-  head 'https://hg.mozilla.org/tracemonkey/archive/tip.tar.gz', :using => :curl
+  head 'https://hg.mozilla.org/tracemonkey/archive/tip.tar.gz'
 
   depends_on 'readline'
   depends_on 'nspr'
@@ -61,11 +59,5 @@ class Spidermonkey < Formula
       # Also install js REPL.
       bin.install "shell/js"
     end
-  end
-
-  def caveats; <<-EOS.undent
-    This formula installs Spidermonkey 1.8.5.
-    If you are trying to compile MongoDB from scratch, you will need 1.7.x instead.
-    EOS
   end
 end
